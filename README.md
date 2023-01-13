@@ -33,6 +33,7 @@ features that make it literally the best terminal emulator ever:
 + Ligatures
 + font2
 + updated to latest version 0.8.5
++ st-anysize
 
 ## Installation for newbs
 
