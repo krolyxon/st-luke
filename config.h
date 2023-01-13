@@ -5,9 +5,9 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "mono:pixelsize=12:antialias=true:autohint=true";
-static char *font2[] = { "NotoColorEmoji:pixelsize=10:antialias=true:autohint=true" };
-static int borderpx = 2;
+static char *font = "JetBrainsMono Nerd Font: pixelsize=15:antialias=true:autohint=true";
+static char *font2[] = { "NotoColorEmoji:pixelsize=15:antialias=true:autohint=true", "FontAwesome:size=10" };
+static int borderpx = 0;
 
 /*
  * What program is execed by st depends of these precedence rules:
@@ -113,28 +113,33 @@ float alphaUnfocus;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
-	"#282828", /* hard contrast: #1d2021 / soft contrast: #32302f */
-	"#cc241d",
-	"#98971a",
-	"#d79921",
-	"#458588",
-	"#b16286",
-	"#689d6a",
-	"#a89984",
-	"#928374",
-	"#fb4934",
-	"#b8bb26",
-	"#fabd2f",
-	"#83a598",
-	"#d3869b",
-	"#8ec07c",
-	"#ebdbb2",
+
+        /* 8 normal colors */
+        "#000000", /* black   */
+        "#cd0000", /* red     */
+        "#00cd00", /* green   */
+        "#cdcd00", /* yellow  */
+        "#0000cd", /* blue    */
+        "#cd00cd", /* magenta */
+        "#00cdcd", /* cyan    */
+        "#e5e5e5", /* white   */
+
+        /* 8 bright colors */
+        "#4d4d4d", /* black   */
+        "#ff0000", /* red     */
+        "#00ff00", /* green   */
+        "#ffff00", /* yellow  */
+        "#0000ff", /* blue    */
+        "#ff00ff", /* magenta */
+        "#00ffff", /* cyan    */
+        "#aabac8", /* white   */
+
 	[255] = 0,
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#add8e6", /* 256 -> cursor */
-	"#555555", /* 257 -> rev cursor*/
-	"#282828", /* 258 -> bg */
-	"#ebdbb2", /* 259 -> fg */
+	"#ffffff", /* 256 -> cursor */
+	"#ffffff", /* 257 -> rev cursor*/
+	"#000000", /* 258 -> bg */
+	"#e5e5e5", /* 259 -> fg */
 };
 
 
@@ -142,11 +147,11 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 259;
-unsigned int defaultbg = 258;
+unsigned int defaultfg = 257;
+unsigned int defaultbg = 0;
 unsigned int defaultcs = 256;
 unsigned int defaultrcs = 257;
-unsigned int background = 258;
+unsigned int background = 0;
 
 /*
  * Default shape of cursor
@@ -240,7 +245,7 @@ static MouseShortcut mshortcuts[] = {
 
 /* Internal keyboard shortcuts. */
 #define MODKEY Mod1Mask
-#define TERMMOD (Mod1Mask|ShiftMask)
+#define TERMMOD (ControlMask|ShiftMask)
 
 static char *openurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -o", "externalpipe", NULL };
 static char *copyurlcmd[] = { "/bin/sh", "-c", "st-urlhandler -c", "externalpipe", NULL };
@@ -257,29 +262,20 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
 	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
-	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
-	{ ShiftMask,            XK_Insert,      clippaste,      {.i =  0} },
-	{ MODKEY,               XK_v,           clippaste,      {.i =  0} },
+        { MODKEY,               XK_c,           clipcopy,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
-	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
-	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
-	{ MODKEY,               XK_Page_Up,     kscrollup,      {.i = -1} },
-	{ MODKEY,               XK_Page_Down,   kscrolldown,    {.i = -1} },
-	{ MODKEY,               XK_k,           kscrollup,      {.i =  1} },
-	{ MODKEY,               XK_j,           kscrolldown,    {.i =  1} },
-	{ MODKEY,               XK_Up,          kscrollup,      {.i =  1} },
-	{ MODKEY,               XK_Down,        kscrolldown,    {.i =  1} },
-	{ MODKEY,               XK_u,           kscrollup,      {.i = -1} },
-	{ MODKEY,               XK_d,           kscrolldown,    {.i = -1} },
+        { MODKEY,               XK_Page_Up,     kscrollup,      {.i = -1} },
+        { MODKEY,               XK_Page_Down,   kscrolldown,    {.i = -1} },
+        { MODKEY,               XK_k,           kscrollup,      {.i =  1} },
+        { MODKEY,               XK_j,           kscrolldown,    {.i =  1} },
 	{ MODKEY,		XK_s,		changealpha,	{.f = -0.05} },
 	{ MODKEY,		XK_a,		changealpha,	{.f = +0.05} },
-	{ TERMMOD,              XK_Up,          zoom,           {.f = +1} },
-	{ TERMMOD,              XK_Down,        zoom,           {.f = -1} },
-	{ TERMMOD,              XK_K,           zoom,           {.f = +1} },
-	{ TERMMOD,              XK_J,           zoom,           {.f = -1} },
-	{ TERMMOD,              XK_U,           zoom,           {.f = +2} },
-	{ TERMMOD,              XK_D,           zoom,           {.f = -2} },
+        { MODKEY,		XK_m,		changealpha,	{.f = +2.00} },
+	{ TERMMOD,              XK_Prior,       zoom,           {.f = +1} },
+	{ TERMMOD,              XK_Next,        zoom,           {.f = -1} },
+	{ TERMMOD,              XK_KP_Add,      zoom,           {.f = +1} },
+        { TERMMOD,              XK_KP_Subtract, zoom,           {.f = -1} },
 	{ MODKEY,               XK_l,           externalpipe,   {.v = openurlcmd } },
 	{ MODKEY,               XK_y,           externalpipe,   {.v = copyurlcmd } },
 	{ MODKEY,               XK_o,           externalpipe,   {.v = copyoutput } },
